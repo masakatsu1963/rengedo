@@ -356,7 +356,14 @@
 
     <div class="amount-grid">
       <label class="amount-label">
-        <input type="radio" name="amount" value="500" checked>
+        <input type="radio" name="amount" value="100" checked>
+        <div class="amount-card">
+          <div class="yen">¥100</div>
+          <div class="note">気軽にひとこと</div>
+        </div>
+      </label>
+      <label class="amount-label">
+        <input type="radio" name="amount" value="500">
         <div class="amount-card">
           <div class="yen">¥500</div>
           <div class="note">コーヒー1杯分</div>
@@ -367,20 +374,6 @@
         <div class="amount-card">
           <div class="yen">¥1,000</div>
           <div class="note">ランチ1回分</div>
-        </div>
-      </label>
-      <label class="amount-label">
-        <input type="radio" name="amount" value="3000">
-        <div class="amount-card">
-          <div class="yen">¥3,000</div>
-          <div class="note">大きなサポート</div>
-        </div>
-      </label>
-      <label class="amount-label">
-        <input type="radio" name="amount" value="5000">
-        <div class="amount-card">
-          <div class="yen">¥5,000</div>
-          <div class="note">スペシャル支援</div>
         </div>
       </label>
     </div>
@@ -458,10 +451,9 @@
     // Stripe: Stripe Dashboard > Payment Links で作成した URL
     // 例: 'https://buy.stripe.com/XXXXXXXXXXXXXXX'
     stripeLinks: {
+      100:    'https://buy.stripe.com/YOUR_STRIPE_LINK_100',
       500:    'https://buy.stripe.com/YOUR_STRIPE_LINK_500',
       1000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_1000',
-      3000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_3000',
-      5000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_5000',
       custom: 'https://buy.stripe.com/YOUR_STRIPE_LINK_CUSTOM', // 任意額対応リンク
     },
     // PayPal.me: 'https://paypal.me/あなたのID'
