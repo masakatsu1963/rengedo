@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>開発支援 | rengedo.asia</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:    #2e7d6e;
+      --green-lt: #3aa391;
+      --green-bg: #e8f5f2;
+      --blue:     #1a5276;
+      --blue-lt:  #2471a3;
+      --text:     #2c3e50;
+      --sub:      #5d6d7e;
+      --border:   #cde4df;
+      --white:    #ffffff;
+      --radius:   14px;
+      --shadow:   0 4px 18px rgba(46,125,110,.15);
+    }
+
+    html, body {
+      height: 100%;
+      background: linear-gradient(160deg, #e8f5f2 0%, #dbeaf7 100%);
+      font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+      color: var(--text);
+    }
+
+    /* ============ LAYOUT ============ */
+    #app {
+      width: 100vw;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      padding: 0 16px 40px;
+    }
+
+    /* ============ HEADER ============ */
+    .site-header {
+      width: 100%;
+      background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+      padding: 36px 20px 32px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .site-header::before {
+      content: '';
+      position: absolute;
+      top: -40px; right: -40px;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+    .site-header::after {
+      content: '';
+      position: absolute;
+      bottom: -30px; left: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.05);
+    }
+    .header-icon {
+      font-size: 44px;
+      display: block;
+      margin-bottom: 10px;
+      position: relative; z-index: 1;
+    }
+    .header-title {
+      color: var(--white);
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: .03em;
+      position: relative; z-index: 1;
+      margin-bottom: 10px;
+    }
+    .header-desc {
+      color: rgba(255,255,255,.88);
+      font-size: 14px;
+      line-height: 1.7;
+      position: relative; z-index: 1;
+    }
+    .header-badge {
+      display: inline-block;
+      margin-top: 14px;
+      background: rgba(255,255,255,.2);
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      color: var(--white);
+      position: relative; z-index: 1;
+      letter-spacing: .04em;
+    }
+
+    /* ============ SECTION TITLE ============ */
+    .section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin: 28px 0 12px;
+    }
+
+    /* ============ AMOUNT CARDS ============ */
+    .amount-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .amount-label {
+      display: block;
+      cursor: pointer;
+    }
+    .amount-label input[type="radio"] { display: none; }
+    .amount-card {
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 12px;
+      text-align: center;
+      transition: all .2s ease;
+    }
+    .amount-label input[type="radio"]:checked + .amount-card {
+      border-color: var(--green);
+      background: var(--green-bg);
+      box-shadow: var(--shadow);
+    }
+    .amount-card .yen {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .amount-card .note {
+      font-size: 11px;
+      color: var(--sub);
+      margin-top: 3px;
+    }
+    .amount-label input[type="radio"]:checked + .amount-card .yen {
+      color: var(--green);
+    }
+
+    /* custom amount */
+    .custom-wrap {
+      margin-top: 10px;
+    }
+    .custom-label-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .custom-label-row input[type="radio"] { display: none; }
+    .custom-radio-box {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .2s;
+    }
+    .custom-label-row input[type="radio"]:checked ~ .custom-radio-box {
+      border-color: var(--green);
+    }
+    .custom-radio-box::after {
+      content: '';
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: var(--green);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .custom-label-row input[type="radio"]:checked ~ .custom-radio-box::after { opacity: 1; }
+    .custom-text {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 600;
+    }
+    .custom-input-wrap {
+      margin-top: 10px;
+      display: none;
+    }
+    .custom-input-wrap.show { display: flex; }
+    .custom-input-wrap .prefix {
+      background: var(--green-bg);
+      border: 1px solid var(--border);
+      border-right: none;
+      border-radius: var(--radius) 0 0 var(--radius);
+      padding: 0 12px;
+      display: flex; align-items: center;
+      font-weight: 700; color: var(--green); font-size: 16px;
+    }
+    .custom-input-wrap input[type="number"] {
+      flex: 1;
+      border: 1px solid var(--border);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 12px 14px;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      background: var(--white);
+      -moz-appearance: textfield;
+    }
+    .custom-input-wrap input[type="number"]::-webkit-inner-spin-button,
+    .custom-input-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .custom-input-wrap input[type="number"]:focus { border-color: var(--green); }
+
+    /* ============ PAYMENT BUTTONS ============ */
+    .payment-section { margin-top: 4px; }
+    .pay-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding: 16px 20px;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 700;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s;
+      margin-bottom: 12px;
+    }
+    .pay-btn:active { transform: scale(.97); }
+    .btn-stripe {
+      background: linear-gradient(135deg, var(--green) 0%, #1a8a7a 100%);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(46,125,110,.35);
+    }
+    .btn-stripe:active { box-shadow: 0 2px 8px rgba(46,125,110,.25); }
+    .btn-paypal {
+      background: linear-gradient(135deg, #003087 0%, #009cde 100%);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(0,48,135,.3);
+    }
+    .btn-paypal:active { box-shadow: 0 2px 8px rgba(0,48,135,.2); }
+    .btn-icon { font-size: 20px; }
+    .btn-sub { font-size: 11px; font-weight: 400; opacity: .85; }
+
+    /* ============ SECURITY NOTE ============ */
+    .security-note {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(255,255,255,.7);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--sub);
+      margin-top: 4px;
+    }
+    .security-note span { font-size: 16px; }
+
+    /* ============ THANKS CARD ============ */
+    .thanks-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 18px;
+      margin-top: 28px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .thanks-card .thanks-icon { font-size: 32px; margin-bottom: 8px; }
+    .thanks-card p {
+      font-size: 14px;
+      color: var(--sub);
+      line-height: 1.75;
+    }
+    .thanks-card strong { color: var(--text); }
+
+    /* ============ FOOTER ============ */
+    .site-footer {
+      margin-top: 32px;
+      text-align: center;
+      padding-bottom: 24px;
+    }
+    .footer-logo {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--green);
+      letter-spacing: .05em;
+      margin-bottom: 6px;
+    }
+    .footer-contact {
+      font-size: 12px;
+      color: var(--sub);
+      margin-bottom: 4px;
+    }
+    .footer-contact a {
+      color: var(--blue-lt);
+      text-decoration: none;
+    }
+    .footer-copy {
+      font-size: 11px;
+      color: #aaa;
+      margin-top: 8px;
+    }
+
+    /* ============ TOAST ============ */
+    #toast {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--green);
+      color: white;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s, transform .3s;
+      z-index: 999;
+      white-space: nowrap;
+    }
+    #toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header">
+    <span class="header-icon">🌿</span>
+    <h1 class="header-title">このアプリ開発を支援する</h1>
+    <p class="header-desc">
+      メンタルウェルネスアプリ「rengedo」の<br>
+      継続的な開発・改善を支援してください。<br>
+      皆さまのサポートが制作の原動力です。
+    </p>
+    <span class="header-badge">rengedo.asia</span>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="container">
+
+    <!-- 支援額 -->
+    <p class="section-title">💚 支援額を選ぶ</p>
+
+    <div class="amount-grid">
+      <label class="amount-label">
+        <input type="radio" name="amount" value="500" checked>
+        <div class="amount-card">
+          <div class="yen">¥500</div>
+          <div class="note">コーヒー1杯分</div>
+        </div>
+      </label>
+      <label class="amount-label">
+        <input type="radio" name="amount" value="1000">
+        <div class="amount-card">
+          <div class="yen">¥1,000</div>
+          <div class="note">ランチ1回分</div>
+        </div>
+      </label>
+      <label class="amount-label">
+        <input type="radio" name="amount" value="3000">
+        <div class="amount-card">
+          <div class="yen">¥3,000</div>
+          <div class="note">大きなサポート</div>
+        </div>
+      </label>
+      <label class="amount-label">
+        <input type="radio" name="amount" value="5000">
+        <div class="amount-card">
+          <div class="yen">¥5,000</div>
+          <div class="note">スペシャル支援</div>
+        </div>
+      </label>
+    </div>
+
+    <!-- 任意額 -->
+    <div class="custom-wrap">
+      <label class="custom-label-row">
+        <input type="radio" name="amount" value="custom" id="radio-custom">
+        <span class="custom-text">🖊 任意の金額を入力</span>
+        <div class="custom-radio-box"></div>
+      </label>
+      <div class="custom-input-wrap" id="custom-input-wrap">
+        <div class="prefix">¥</div>
+        <input type="number" id="custom-amount" placeholder="例: 2000" min="100">
+      </div>
+    </div>
+
+    <!-- 決済ボタン -->
+    <p class="section-title" style="margin-top:32px;">💳 決済方法を選ぶ</p>
+
+    <div class="payment-section">
+      <a id="stripe-btn" href="#" class="pay-btn btn-stripe" onclick="handleStripe(event)">
+        <span class="btn-icon">💳</span>
+        <span>
+          クレジットカードで支援<br>
+          <span class="btn-sub">Stripe による安全な決済</span>
+        </span>
+      </a>
+
+      <a id="paypal-btn" href="#" class="pay-btn btn-paypal" onclick="handlePayPal(event)">
+        <span class="btn-icon">🅿</span>
+        <span>
+          PayPal で支援<br>
+          <span class="btn-sub">PayPal.me による決済</span>
+        </span>
+      </a>
+
+      <div class="security-note">
+        <span>🔒</span>
+        決済情報はこのページには保存されません。
+        すべて Stripe / PayPal の安全なページで処理されます。
+      </div>
+    </div>
+
+    <!-- 感謝カード -->
+    <div class="thanks-card">
+      <div class="thanks-icon">🙏</div>
+      <p>
+        ご支援いただいたすべての方に<br>
+        <strong>心より感謝申し上げます。</strong><br><br>
+        いただいたサポートは、アプリの機能改善・<br>
+        サーバー維持・新機能開発に充てられます。<br>
+        皆さまの応援がこのアプリを前進させます。
+      </p>
+    </div>
+
+    <!-- フッター -->
+    <footer class="site-footer">
+      <div class="footer-logo">🌿 rengedo.asia</div>
+      <p class="footer-contact">
+        お問い合わせ:
+        <a href="mailto:makasatsu1963@gmail.com">makasatsu1963@gmail.com</a>
+      </p>
+      <p class="footer-copy">© 2026 rengedo.asia All rights reserved.</p>
+    </footer>
+
+  </main>
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+  // ===== 設定: ここにご自身のキー/URLを入れてください =====
+  const CONFIG = {
+    // Stripe: Stripe Dashboard > Payment Links で作成した URL
+    // 例: 'https://buy.stripe.com/XXXXXXXXXXXXXXX'
+    stripeLinks: {
+      500:    'https://buy.stripe.com/YOUR_STRIPE_LINK_500',
+      1000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_1000',
+      3000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_3000',
+      5000:   'https://buy.stripe.com/YOUR_STRIPE_LINK_5000',
+      custom: 'https://buy.stripe.com/YOUR_STRIPE_LINK_CUSTOM', // 任意額対応リンク
+    },
+    // PayPal.me: 'https://paypal.me/あなたのID'
+    paypalBase: 'https://paypal.me/YOUR_PAYPAL_ID',
+  };
+  // ========================================================
+
+  // 任意額入力の表示切替
+  document.querySelectorAll('input[name="amount"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      const wrap = document.getElementById('custom-input-wrap');
+      if (radio.value === 'custom') {
+        wrap.classList.add('show');
+        document.getElementById('custom-amount').focus();
+      } else {
+        wrap.classList.remove('show');
+      }
+    });
+  });
+
+  function getSelectedAmount() {
+    const checked = document.querySelector('input[name="amount"]:checked');
+    if (!checked) return null;
+    if (checked.value === 'custom') {
+      const v = parseInt(document.getElementById('custom-amount').value, 10);
+      return (v && v >= 100) ? v : null;
+    }
+    return parseInt(checked.value, 10);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function handleStripe(e) {
+    e.preventDefault();
+    const amount = getSelectedAmount();
+    if (!amount) { showToast('金額を入力してください'); return; }
+
+    const checked = document.querySelector('input[name="amount"]:checked');
+    const isCustom = checked.value === 'custom';
+    const link = isCustom
+      ? CONFIG.stripeLinks.custom
+      : CONFIG.stripeLinks[amount];
+
+    if (!link || link.includes('YOUR_')) {
+      showToast('Stripe リンクを設定してください');
+      return;
+    }
+    window.location.href = link;
+  }
+
+  function handlePayPal(e) {
+    e.preventDefault();
+    const amount = getSelectedAmount();
+    if (!amount) { showToast('金額を入力してください'); return; }
+
+    if (CONFIG.paypalBase.includes('YOUR_')) {
+      showToast('PayPal ID を設定してください');
+      return;
+    }
+    // PayPal.me/ID/金額JPY の形式
+    window.location.href = `${CONFIG.paypalBase}/${amount}JPY`;
+  }
+</script>
+</body>
+</html>
