@@ -149,71 +149,52 @@
       color: var(--green);
     }
 
-    /* custom amount */
-    .custom-wrap {
-      margin-top: 10px;
+    /* custom amount card */
+    .custom-card-default {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
-    .custom-label-row {
+    .custom-card-default .yen { font-size: 22px; }
+    .amount-label input[type="radio"]:checked + .amount-card .custom-card-default { display: none; }
+
+    .custom-card-active {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
+    }
+    .amount-label input[type="radio"]:checked + .amount-card .custom-card-active { display: flex; }
+
+    .custom-card-active .prefix-row {
       display: flex;
       align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-    .custom-label-row input[type="radio"] { display: none; }
-    .custom-radio-box {
-      width: 20px; height: 20px;
-      border-radius: 50%;
-      border: 2px solid var(--border);
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: border-color .2s;
-    }
-    .custom-label-row input[type="radio"]:checked ~ .custom-radio-box {
-      border-color: var(--green);
-    }
-    .custom-radio-box::after {
-      content: '';
-      width: 10px; height: 10px;
-      border-radius: 50%;
-      background: var(--green);
-      opacity: 0;
-      transition: opacity .2s;
-    }
-    .custom-label-row input[type="radio"]:checked ~ .custom-radio-box::after { opacity: 1; }
-    .custom-text {
-      font-size: 15px;
-      color: var(--text);
-      font-weight: 600;
-    }
-    .custom-input-wrap {
-      margin-top: 10px;
-      display: none;
-    }
-    .custom-input-wrap.show { display: flex; }
-    .custom-input-wrap .prefix {
-      background: var(--green-bg);
-      border: 1px solid var(--border);
-      border-right: none;
-      border-radius: var(--radius) 0 0 var(--radius);
-      padding: 0 12px;
-      display: flex; align-items: center;
-      font-weight: 700; color: var(--green); font-size: 16px;
-    }
-    .custom-input-wrap input[type="number"] {
-      flex: 1;
-      border: 1px solid var(--border);
-      border-radius: 0 var(--radius) var(--radius) 0;
-      padding: 12px 14px;
-      font-size: 18px;
+      gap: 2px;
+      font-size: 14px;
       font-weight: 700;
-      color: var(--text);
+      color: var(--green);
+    }
+    .custom-card-active input[type="number"] {
+      width: 100%;
+      border: 1.5px solid var(--green);
+      border-radius: 8px;
+      padding: 6px 8px;
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--green);
+      text-align: center;
       outline: none;
       background: var(--white);
       -moz-appearance: textfield;
     }
-    .custom-input-wrap input[type="number"]::-webkit-inner-spin-button,
-    .custom-input-wrap input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
-    .custom-input-wrap input[type="number"]:focus { border-color: var(--green); }
+    .custom-card-active input[type="number"]::-webkit-inner-spin-button,
+    .custom-card-active input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .custom-card-active .note {
+      font-size: 10px;
+      color: var(--sub);
+    }
 
     /* ============ PAYMENT BUTTONS ============ */
     .payment-section { margin-top: 4px; }
@@ -376,22 +357,23 @@
           <div class="note">ランチ1回分</div>
         </div>
       </label>
-    </div>
-
-    <!-- 任意額 -->
-    <div class="custom-wrap">
-      <label class="custom-label-row">
+      <label class="amount-label">
         <input type="radio" name="amount" value="custom" id="radio-custom">
-        <span class="custom-text">🖊 任意の金額を入力</span>
-        <div class="custom-radio-box"></div>
+        <div class="amount-card">
+          <div class="custom-card-default">
+            <div class="yen">🖊</div>
+            <div class="note">任意の金額</div>
+          </div>
+          <div class="custom-card-active">
+            <div class="prefix-row">¥ 金額を入力</div>
+            <input type="number" id="custom-amount" placeholder="例: 2000" min="100">
+            <div class="note">100円以上</div>
+          </div>
+        </div>
       </label>
-      <div class="custom-input-wrap" id="custom-input-wrap">
-        <div class="prefix">¥</div>
-        <input type="number" id="custom-amount" placeholder="例: 2000" min="100">
-      </div>
     </div>
 
-    <!-- 決済ボタン -->
+    <!-- 決済ボタc�� -->
     <p class="section-title" style="margin-top:32px;">💳 決済方法を選ぶ</p>
 
     <div class="payment-section">
@@ -461,17 +443,9 @@
   };
   // ========================================================
 
-  // 任意額入力の表示切替
-  document.querySelectorAll('input[name="amount"]').forEach(radio => {
-    radio.addEventListener('change', () => {
-      const wrap = document.getElementById('custom-input-wrap');
-      if (radio.value === 'custom') {
-        wrap.classList.add('show');
-        document.getElementById('custom-amount').focus();
-      } else {
-        wrap.classList.remove('show');
-      }
-    });
+  // 任意額: カード選択時に入力欄をフォーカス
+  document.getElementById('radio-custom').addEventListener('change', () => {
+    setTimeout(() => document.getElementById('custom-amount').focus(), 50);
   });
 
   function getSelectedAmount() {
